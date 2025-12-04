@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-scale: 1;
+    --contrast-mode: normal;
+    --reading-mode: normal;
+  }
+
+  *:focus {
+    outline: 3px solid #ff6b00;
+    outline-offset: 2px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  *:focus-visible {
+    outline: 3px solid #ff6b00;
+    outline-offset: 2px;
+  }
+
+  html {
+    font-size: calc(16px * var(--font-scale));
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Atkinson Hyperlegible', Arial, sans-serif;
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+  }
+
+  .high-contrast-yellow {
+    --bg-color: #000000;
+    --text-color: #ffff00;
+    --link-color: #00ffff;
+    --border-color: #ffffff;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .high-contrast-yellow * {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border-color: #ffffff !important;
+  }
+
+  .high-contrast-yellow a,
+  .high-contrast-yellow button {
+    color: #00ffff !important;
+    text-decoration: underline !important;
+  }
+
+  .high-contrast-blue {
+    --bg-color: #00008b;
+    --text-color: #ffffff;
+    --link-color: #00ffff;
+    --border-color: #ffffff;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .high-contrast-blue * {
+    background-color: #00008b !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+  }
+
+  .high-contrast-blue a,
+  .high-contrast-blue button {
+    color: #00ffff !important;
+    text-decoration: underline !important;
+  }
+
+  .high-contrast-dark {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --link-color: #00ff00;
+    --border-color: #ffffff;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .high-contrast-dark * {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+  }
+
+  .high-contrast-dark a,
+  .high-contrast-dark button {
+    color: #00ff00 !important;
+    text-decoration: underline !important;
+  }
+
+  .reading-mode-simple {
+    max-width: 65ch;
+    margin-inline: auto;
+  }
+
+  .reading-mode-simple img:not(.essential),
+  .reading-mode-simple aside,
+  .reading-mode-simple .decoration,
+  .reading-mode-simple .sidebar {
+    display: none !important;
+  }
+
+  .reading-mode-simple * {
+    font-family: 'Atkinson Hyperlegible', Arial, sans-serif !important;
+    line-height: 2 !important;
+    letter-spacing: 0.05em !important;
+  }
+}
+
+@layer components {
+  .btn-accessible {
+    @apply min-h-[44px] min-w-[44px] px-4 py-2 rounded-lg font-semibold;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:ring-4 focus:ring-accessibility-focus focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn-accessible bg-gov-primary text-white;
+    @apply hover:bg-gov-secondary active:bg-gov-dark;
+  }
+
+  .btn-secondary {
+    @apply btn-accessible bg-gov-light text-gov-primary border-2 border-gov-primary;
+    @apply hover:bg-gov-primary hover:text-white;
+  }
+
+  .card-accessible {
+    @apply p-6 rounded-xl border-2 border-gov-light;
+    @apply bg-white shadow-lg;
+    @apply focus-within:ring-4 focus-within:ring-accessibility-focus;
+  }
+
+  .input-accessible {
+    @apply min-h-[44px] px-4 py-2 rounded-lg border-2 border-gov-light;
+    @apply text-accessible-base text-gov-dark;
+    @apply focus:border-gov-primary focus:ring-4 focus:ring-accessibility-focus;
+    @apply placeholder:text-gray-500;
+  }
+
+  .skip-link {
+    @apply absolute -top-full left-0 z-50;
+    @apply bg-gov-primary text-white px-6 py-3 font-bold;
+    @apply focus:top-0 transition-all;
+  }
+
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .skeleton {
+    @apply animate-skeleton bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
+    background-size: 200% 100%;
+  }
+}
+
+@layer utilities {
+  .font-scale-sm {
+    --font-scale: 0.875;
+  }
+
+  .font-scale-normal {
+    --font-scale: 1;
+  }
+
+  .font-scale-lg {
+    --font-scale: 1.25;
+  }
+
+  .font-scale-xl {
+    --font-scale: 1.5;
+  }
+
+  .font-scale-2xl {
+    --font-scale: 2;
+  }
+}
