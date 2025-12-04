@@ -1,14 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { DiagnosticDashboard } from "@/components/DiagnosticDashboard";
 import { ArrowLeft, ExternalLink, FileCode, Shield } from "lucide-react";
 
 export default function DiagnosticoPage() {
+  const [apiStatus, setApiStatus] = useState<"loading" | "ok" | "error">("loading");
+
+  // --- Verifica conexão com o backend ---
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+        const res = await fetch(`${baseUrl}/health`, { cache: "no-store" });
+
+        if (!res.ok) {
+          setApiStatus("error");
+          return;
+        }
+
+        const text = await res.text();
+        console.log("API /health =>", text);
+        setApiStatus("ok");
+      } catch (e) {
+        console.error("Erro ao chamar /health", e);
+        setApiStatus("error");
+      }
+    };
+
+    checkHealth();
+  }, []);
+
   return (
     <main className="min-h-screen bg-gray-50">
       <header className="bg-gov-primary text-white py-8 px-4">
         <div className="max-w-6xl mx-auto">
+
+          {/* Breadcrumb */}
           <nav aria-label="Navegacao breadcrumb" className="mb-4">
             <ol className="flex items-center gap-2 text-sm">
               <li>
@@ -18,27 +48,53 @@ export default function DiagnosticoPage() {
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-yellow-300">Diagnostico</li>
+              <li aria-current="page" className="text-yellow-300">
+                Diagnostico
+              </li>
             </ol>
           </nav>
-          
+
+          {/* Título */}
           <h1 className="text-3xl md:text-4xl font-bold">
             Diagnostico de Acessibilidade
           </h1>
           <p className="text-white/80 mt-2 text-lg">
             Analise automatizada baseada nas diretrizes WCAG 2.1 e axe-core
           </p>
+
+          {/* --- Status da API --- */}
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/10 border border-white/20">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{
+                backgroundColor:
+                  apiStatus === "ok"
+                    ? "#22c55e" // verde
+                    : apiStatus === "loading"
+                    ? "#eab308" // amarelo
+                    : "#ef4444", // vermelho
+              }}
+            />
+            <span className="text-sm text-white/90">
+              {apiStatus === "loading" && "Verificando status da API..."}
+              {apiStatus === "ok" && "API conectada com sucesso"}
+              {apiStatus === "error" && "Falha ao conectar à API"}
+            </span>
+          </div>
         </div>
       </header>
 
+      {/* Conteúdo principal */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <DiagnosticDashboard />
             </div>
-            
+
+            {/* Sidebar */}
             <aside className="space-y-6">
+
               <article className="card-accessible">
                 <div className="flex items-center gap-3 mb-4">
                   <Shield className="w-8 h-8 text-gov-primary" aria-hidden="true" />
@@ -75,12 +131,10 @@ export default function DiagnosticoPage() {
                 </div>
                 <ul className="space-y-3">
                   <li>
-                    <a 
+                    <a
                       href="https://github.com/dequelabs/axe-core"
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg
-                               hover:bg-gov-light transition-colors group"
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gov-light transition-colors group"
                     >
                       <div>
                         <span className="font-medium text-gov-primary">axe-core</span>
@@ -90,12 +144,10 @@ export default function DiagnosticoPage() {
                     </a>
                   </li>
                   <li>
-                    <a 
-                      href="https://www.w3.org/WAI/WCAG21/quickref/"
+                    <a
+                      href="https://www.w3.org/WWAI/WCAG21/quickref/"
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg
-                               hover:bg-gov-light transition-colors group"
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gov-light transition-colors group"
                     >
                       <div>
                         <span className="font-medium text-gov-primary">WCAG 2.1</span>
@@ -105,12 +157,10 @@ export default function DiagnosticoPage() {
                     </a>
                   </li>
                   <li>
-                    <a 
+                    <a
                       href="https://www.radix-ui.com/"
                       target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg
-                               hover:bg-gov-light transition-colors group"
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gov-light transition-colors group"
                     >
                       <div>
                         <span className="font-medium text-gov-primary">Radix UI</span>
@@ -136,6 +186,7 @@ export default function DiagnosticoPage() {
                   </code>
                 </div>
               </article>
+
             </aside>
           </div>
         </div>
