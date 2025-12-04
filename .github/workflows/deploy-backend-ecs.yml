@@ -52,13 +52,10 @@ jobs:
             --task-definition ${{ env.TASK_DEFINITION_FAMILY }} \
             --query "taskDefinition" > task-definition-raw.json
 
-          # Caso apareça algum campo que sua versão da action não conheça, dá pra limpar aqui
-          # Exemplo:
-          # jq 'del(.enableFaultInjection)' task-definition-raw.json > task-definition.json
-          # Se não tiver isso na sua task, pode só copiar direto:
-          cp task-definition-raw.json task-definition.json
+  
+          jq 'del(.enableFaultInjection)' task-definition-raw.json > task-definition.json
 
-          echo "Task definition usada no deploy:"
+          echo "Task definition usada no deploy (limpa):"
           cat task-definition.json
 
       - name: 📝 Update Task Definition Image
