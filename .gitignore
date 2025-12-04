@@ -1,24 +1,93 @@
-# Compiled class file
-*.class
+# ============================
+# 🌐 FRONTEND – Node / Next.js
+# ============================
 
-# Log file
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build & cache
+.next/
+out/
+dist/
+.cache/
+turbo/
+.eslintcache
+
+# Ambiente
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# BlueJ files
-*.ctxt
+# Editor
+.vscode/
+.idea/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# ============================
+# ☕ BACKEND – Java / Maven
+# ============================
 
-# Package Files #
+/backend/target/
+/backend/.mvn/
+.mvn/
+**/target/
+
+# Arquivos de build
+*.class
 *.jar
 *.war
-*.nar
 *.ear
-*.zip
-*.tar.gz
-*.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Logs Java
 hs_err_pid*
 replay_pid*
+
+# ============================
+# 🖥️ SISTEMA OPERACIONAL / IDE
+# ============================
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IntelliJ / Eclipse / Outros
+*.iml
+*.ipr
+*.iws
+.idea/
+.classpath
+.project
+.settings/
+bin/
+
+# ============================
+# 🐳 Docker
+# ============================
+
+*.pid
+docker-compose.override.yml
+
+# ============================
+# 🧪 Testes / temporários
+# ============================
+
+coverage/
+.jest/
+.tmp/
