@@ -1,4 +1,4 @@
-# 1ª etapa: build do jar
+# Etapa 1: build do jar
 FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
@@ -10,7 +10,7 @@ COPY src ./src
 
 RUN mvn -B package -DskipTests
 
-# 2ª etapa: runtime
+# Etapa 2: runtime
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
