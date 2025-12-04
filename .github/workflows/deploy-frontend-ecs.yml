@@ -1,4 +1,4 @@
-name: 🚀 Deploy Backend Java (ECS)
+name: 🚀 Deploy Frontend Next (ECS)
 
 on:
   push:
@@ -10,15 +10,15 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: blumenau-backend-repo
-  ECS_SERVICE: blumenau-backend-service
+  ECR_REPOSITORY: blumenau-frontend-repo
+  ECS_SERVICE: blumenau-frontend-service
   ECS_CLUSTER: blumenau-hackathon-cluster
-  CONTAINER_NAME: blumenau-backend-container
-  TASK_DEFINITION_FAMILY: blumenau-backend-task
+  CONTAINER_NAME: blumenau-frontend-container
+  TASK_DEFINITION_FAMILY: blumenau-frontend-task
 
 jobs:
   deploy:
-    name: Build & Deploy Backend to ECS
+    name: Build & Deploy Frontend to ECS
     runs-on: ubuntu-latest
 
     steps:
@@ -35,12 +35,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: 🐳 Build, Tag, and Push Backend Image
+      - name: 🐳 Build, Tag, and Push Frontend Image
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
-        working-directory: ./backend
+        working-directory: ./frontend
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -50,14 +50,7 @@ jobs:
         run: |
           aws ecs describe-task-definition \
             --task-definition ${{ env.TASK_DEFINITION_FAMILY }} \
-            --query "taskDefinition" > task-definition-raw.json
-
-          # Caso apareça algum campo que sua versão da action não conheça, dá pra limpar aqui
-          # Exemplo:
-          # jq 'del(.enableFaultInjection)' task-definition-raw.json > task-definition.json
-          # Se não tiver isso na sua task, pode só copiar direto:
-          cp task-definition-raw.json task-definition.json
-
+            --query "taskDefinition" > task-definition.json
           echo "Task definition usada no deploy:"
           cat task-definition.json
 
