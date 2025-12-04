@@ -1,0 +1,79 @@
+name: 🚀 Deploy Backend Java (ECS)
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+  ECR_REPOSITORY: service-java-hackathon      
+  ECS_SERVICE: service-blumenau-java                 
+  ECS_CLUSTER: hackathon-project-cluster-hackathon 
+  CONTAINER_NAME: java-container              
+  TASK_DEFINITION_FAMILY: java-task-hackathon  
+
+jobs:
+  deploy:
+    name: Build & Deploy Backend to ECS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 🔑 Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: 🐳 Build, Tag, and Push Backend Image
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        working-directory: ./backend
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: 📥 Download Current Task Definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.TASK_DEFINITION_FAMILY }} \
+            --query "taskDefinition" > task-definition-raw.json
+
+          # Caso apareça algum campo que sua versão da action não conheça, dá pra limpar aqui
+          # Exemplo:
+          # jq 'del(.enableFaultInjection)' task-definition-raw.json > task-definition.json
+          # Se não tiver isso na sua task, pode só copiar direto:
+          cp task-definition-raw.json task-definition.json
+
+          echo "Task definition usada no deploy:"
+          cat task-definition.json
+
+      - name: 📝 Update Task Definition Image
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: 🚀 Deploy to ECS Service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
