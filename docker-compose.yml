@@ -1,9 +1,10 @@
-version: "3.9"
+version: "3.8"
 
 services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: blumenau-backend
     ports:
       - "8080:8080"
@@ -13,13 +14,15 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     container_name: blumenau-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: "http://backend:8080"
     depends_on:
       - backend
+    environment:
+      # Dentro do Docker, o frontend acessa o backend pelo nome do serviço: "backend"
+      NEXT_PUBLIC_API_URL: http://backend:8080
+    ports:
+      - "3000:3000"
     networks:
       - blumenau-net
 
