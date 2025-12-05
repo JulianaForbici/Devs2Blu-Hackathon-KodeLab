@@ -93,13 +93,22 @@ export async function simplifyText(complexText: string): Promise<{ simplified: s
     return { simplified: data.simplified, isAI: data.isAI };
   } catch (error) {
     if (complexText.includes("UBS") || complexText.includes("saude")) {
-      return { simplified: "Nova UBS no bairro Garcia funciona 24 horas. Oferece atendimento medico, dentista e exames. Custo: R$ 850 mil por ano.", isAI: false };
+      return {
+        simplified: "Nova UBS no bairro Garcia funciona 24 horas. Oferece atendimento medico, dentista e exames. Custo: R$ 850 mil por ano.",
+        isAI: false,
+      };
     }
     if (complexText.includes("curso") || complexText.includes("capacitacao")) {
-      return { simplified: "Cursos gratuitos: Web, Gastronomia, Marketing e mais. 500 vagas. Inscricoes: 1 a 15 de dezembro no site da Prefeitura.", isAI: false };
+      return {
+        simplified: "Cursos gratuitos: Web, Gastronomia, Marketing e mais. 500 vagas. Inscricoes: 1 a 15 de dezembro no site da Prefeitura.",
+        isAI: false,
+      };
     }
     if (complexText.includes("feira") || complexText.includes("produtor")) {
-      return { simplified: "Feira de produtores todo sabado das 7h as 13h na XV de Novembro. Produtores locais podem participar de graca.", isAI: false };
+      return {
+        simplified: "Feira de produtores todo sabado das 7h as 13h na XV de Novembro. Produtores locais podem participar de graca.",
+        isAI: false,
+      };
     }
     return { simplified: "Informacao da Prefeitura de Blumenau.", isAI: false };
   }
@@ -116,12 +125,16 @@ export interface AIAnalysisResult {
 export async function analyzeAndSimplify(text: string): Promise<AIAnalysisResult> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const simplifiedText = await simplifyText(text);
+  // 🔧 AQUI ESTAVA O PROBLEMA
+  const { simplified } = await simplifyText(text);
 
   const words = text.split(/\s+/).length;
   const sentences = text.split(/[.!?]+/).length;
   const avgWordsPerSentence = words / sentences;
-  const readabilityScore = Math.max(0, Math.min(100, 100 - (avgWordsPerSentence - 15) * 3));
+  const readabilityScore = Math.max(
+    0,
+    Math.min(100, 100 - (avgWordsPerSentence - 15) * 3),
+  );
 
   const keyPoints = extractKeyPoints(text);
 
@@ -132,13 +145,17 @@ export async function analyzeAndSimplify(text: string): Promise<AIAnalysisResult
   if (text.match(/Art\.|§|Inc\./g)) {
     warnings.push("Contem referencias juridicas que podem ser dificeis de entender");
   }
-  if (Object.keys(complexTermsSimplification).some((term) => text.toLowerCase().includes(term))) {
+  if (
+    Object.keys(complexTermsSimplification).some((term) =>
+      text.toLowerCase().includes(term),
+    )
+  ) {
     warnings.push("Termos tecnicos foram simplificados");
   }
 
   return {
     originalText: text,
-    simplifiedText,
+    simplifiedText: simplified, // ⬅️ agora é string
     readabilityScore,
     keyPoints,
     warnings,
