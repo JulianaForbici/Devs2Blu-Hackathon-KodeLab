@@ -50,8 +50,29 @@ jobs:
         run: |
           aws ecs describe-task-definition \
             --task-definition ${{ env.TASK_DEFINITION_FAMILY }} \
-            --query "taskDefinition" > task-definition.json
-          echo "Task definition usada no deploy:"
+            --query "taskDefinition" > task-definition-raw.json
+
+          jq '{
+            family: .family,
+            taskRoleArn: .taskRoleArn,
+            executionRoleArn: .executionRoleArn,
+            networkMode: .networkMode,
+            containerDefinitions: .containerDefinitions,
+            volumes: .volumes,
+            placementConstraints: .placementConstraints,
+            requiresCompatibilities: .requiresCompatibilities,
+            cpu: .cpu,
+            memory: .memory,
+            tags: .tags,
+            runtimePlatform: .runtimePlatform,
+            proxyConfiguration: .proxyConfiguration,
+            inferenceAccelerators: .inferenceAccelerators,
+            pidMode: .pidMode,
+            ipcMode: .ipcMode,
+            ephemeralStorage: .ephemeralStorage
+          }' task-definition-raw.json > task-definition.json
+
+          echo "Task definition usada no deploy (limpa):"
           cat task-definition.json
 
       - name: 📝 Update Task Definition Image
